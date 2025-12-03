@@ -67,20 +67,51 @@ class MyDataset(Dataset):
         self.partition = partition
         for wave_scp_src in wave_scp_srcs:
             if not os.path.exists(wave_scp_src): raise FileNotFoundError(f"Could not find file {wave_scp_src}")
+        # self.max_len = max_len
+        # self.fs = fs
+        # self.wave_dict_srcs = [util_dataset.parse_scps(wave_scp_src) for wave_scp_src in wave_scp_srcs]
+        # self.wave_dict_mix = util_dataset.parse_scps(wave_scp_mix)
+        # self.wave_dict_noise = util_dataset.parse_scps(wave_scp_noise) if wave_scp_noise else None
+        # self.wave_keys = list(self.wave_dict_mix.keys())
+        # logger.info(f"Create MyDataset for {wave_scp_mix} with {len(self.wave_dict_mix)} utterances")
+        # self.dynamic_mixing = dynamic_mixing
+
         self.max_len = max_len
         self.fs = fs
+
+        # Parse scp files
         self.wave_dict_srcs = [util_dataset.parse_scps(wave_scp_src) for wave_scp_src in wave_scp_srcs]
         self.wave_dict_mix = util_dataset.parse_scps(wave_scp_mix)
         self.wave_dict_noise = util_dataset.parse_scps(wave_scp_noise) if wave_scp_noise else None
-        self.wave_keys = list(self.wave_dict_mix.keys())
-        logger.info(f"Create MyDataset for {wave_scp_mix} with {len(self.wave_dict_mix)} utterances")
+
+        # ---- KEY INTERSECTION: only keep keys present in mix AND all srcs ----
+        mix_keys = set(self.wave_dict_mix.keys())
+        common_keys = mix_keys.copy()
+        for d in self.wave_dict_srcs:
+            common_keys &= set(d.keys())
+
+        self.wave_keys = sorted(list(common_keys))
+        logger.info(
+            f"Create MyDataset for {wave_scp_mix} with "
+            f"{len(self.wave_keys)} utterances (intersection of mix/src scps)"
+        )
+        # ----------------------------------------------------------------------
+
         self.dynamic_mixing = dynamic_mixing
+
     
+    # def __len__(self):
+    #     return len(self.wave_dict_mix)
+    
+    # def __contains__(self, key):
+    #     return key in self.wave_dict_mix
     def __len__(self):
-        return len(self.wave_dict_mix)
-    
+    # Use filtered intersection list
+        return len(self.wave_keys)
+
     def __contains__(self, key):
-        return key in self.wave_dict_mix
+        return key in self.wave_keys
+
     
     def _dynamic_mixing(self, key):
         def __match_length(wav, len_data) : 
@@ -158,8 +189,50 @@ class MyDataset(Dataset):
         
         return samps_mix, samps_src
     
+    # def __getitem__(self, index):
+    #     key = self.wave_keys[index]
+    #     if any(key not in self.wave_dict_srcs[i] for i in range(len(self.wave_dict_srcs))) or key not in self.wave_dict_mix: raise KeyError(f"Could not find utterance {key}")
+    #     samps_mix, samps_src = self._dynamic_mixing(key) if self.dynamic_mixing else self._direct_load(key)
+    #     return {"num_sample": samps_mix.shape[0], "mix": samps_mix, "src": samps_src, "key": key}
+    # def __getitem__(self, index):
+    #     key = self.wave_keys[index]
+    #     # keys are already guaranteed to exist in mix + all sources by __init__
+    #     samps_mix, samps_src = self._dynamic_mixing(key) if self.dynamic_mixing else self._direct_load(key)
+    #     return {
+    #         "num_sample": samps_mix.shape[0],
+    #         "mix": samps_mix,
+    #         "src": samps_src,
+    #         "key": key,
+    #     }
+
     def __getitem__(self, index):
-        key = self.wave_keys[index]
-        if any(key not in self.wave_dict_srcs[i] for i in range(len(self.wave_dict_srcs))) or key not in self.wave_dict_mix: raise KeyError(f"Could not find utterance {key}")
-        samps_mix, samps_src = self._dynamic_mixing(key) if self.dynamic_mixing else self._direct_load(key)
-        return {"num_sample": samps_mix.shape[0], "mix": samps_mix, "src": samps_src, "key": key}
+        """
+        Robust __getitem__:
+        - tries to load the key
+        - if audio loading fails (corrupted / bad format), it logs a warning
+          and randomly resamples another key
+        """
+        max_retries = 5
+
+        for _ in range(max_retries):
+            key = self.wave_keys[index]
+            try:
+                samps_mix, samps_src = (
+                    self._dynamic_mixing(key) if self.dynamic_mixing else self._direct_load(key)
+                )
+
+                return {
+                    "num_sample": samps_mix.shape[0],
+                    "mix": samps_mix,
+                    "src": samps_src,
+                    "key": key,
+                }
+
+            except Exception as e:
+                # Log and pick another random example
+                logger.warning(f"[MyDataset] Skipping bad example {key}: {e}")
+                index = random.randint(0, len(self.wave_keys) - 1)
+
+        # If we somehow hit too many bad files in a row, fail loudly
+        raise RuntimeError("Too many bad audio files encountered in MyDataset.__getitem__")
+
