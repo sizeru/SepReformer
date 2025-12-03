@@ -32,7 +32,7 @@ class Engine(object):
         self.scratch_weights_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "log", "scratch_weights")
         os.makedirs(self.scratch_weights_path, exist_ok=True)
         
-        # self.checkpoint_path = self.pretrain_weights_path if any(file.endswith(('.pt', '.pt', '.pkl')) for file in os.listdir(self.pretrain_weights_path)) else self.scratch_weights_path
+        # self.checkpoint_path = self.pretrain_weights_path if any(file.endswith(('.pt', '.pt', '.pkl')) for file in os.listdir(self.pretrain_weights_path)) else self.ide_weights_path
         # self.start_epoch = util_engine.load_last_checkpoint_n_get_epoch(self.checkpoint_path, self.model, self.main_optimizer, location=self.device)
         self.checkpoint_path = self.scratch_weights_path  # or wherever you want to SAVE new tiny weights
         self.start_epoch = 0  # always start from scratch for Tiny
