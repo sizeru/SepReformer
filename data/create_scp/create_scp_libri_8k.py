@@ -5,10 +5,10 @@ train_mix_scp = 'scp_ss_8k_libri/tr_mix.scp'
 train_s1_scp = 'scp_ss_8k_libri/tr_s1.scp'
 train_s2_scp = 'scp_ss_8k_libri/tr_s2.scp'
 
-
-train_mix = '/home/work/data_Uihyeop/data/LibriMIX_orig/train-100/mix_clean'
-train_s1 = '/home/work/data_Uihyeop/data/LibriMIX_orig/train-100/s1'
-train_s2 = '/home/work/data_Uihyeop/data/LibriMIX_orig/train-100/s2'
+# NOTE(Nate): Change me to the correct dir sometimes
+train_mix = '/work/11007/sanjana/ls6/wav8k/max/train-360/mix_clean'
+train_s1 = '/work/11007/sanjana/ls6/wav8k/max/train-360/s1'
+train_s2 = '/work/11007/sanjana/ls6/wav8k/max/train-360/s2'
 
 
 tr_mix = open(train_mix_scp,'w')
@@ -38,9 +38,9 @@ test_mix_scp = 'scp_ss_8k_libri/tt_mix.scp'
 test_s1_scp = 'scp_ss_8k_libri/tt_s1.scp'
 test_s2_scp = 'scp_ss_8k_libri/tt_s2.scp'
 
-test_mix = '/home/work/data_Uihyeop/data/LibriMIX_orig/test/mix_clean'
-test_s1 = '/home/work/data_Uihyeop/data/LibriMIX_orig/test/s1'
-test_s2 = '/home/work/data_Uihyeop/data/LibriMIX_orig/test/s2'
+test_mix = '/work/11007/sanjana/ls6/wav8k/max/test/mix_clean'
+test_s1 = '/work/11007/sanjana/ls6/wav8k/max/test/s1'
+test_s2 = '/work/11007/sanjana/ls6/wav8k/max/test/s2'
 
 # test_mix = '/home/nas/user/Uihyeop/DB/wsj0-mix/2speakers/wav8k/min/tt/mix'
 # test_s1 = '/home/nas/user/Uihyeop/DB/wsj0-mix/2speakers/wav8k/min/tt/s1'
@@ -73,9 +73,9 @@ cv_mix_scp = 'scp_ss_8k_libri/cv_mix.scp'
 cv_s1_scp = 'scp_ss_8k_libri/cv_s1.scp'
 cv_s2_scp = 'scp_ss_8k_libri/cv_s2.scp'
 
-cv_mix = '/home/work/data_Uihyeop/data/LibriMIX_orig/dev/mix_both'
-cv_s1 = '/home/work/data_Uihyeop/data/LibriMIX_orig/dev/s1'
-cv_s2 = '/home/work/data_Uihyeop/data/LibriMIX_orig/dev/s2'
+cv_mix = '/work/11007/sanjana/ls6/wav8k/max/dev/mix_clean'
+cv_s1 = '/work/11007/sanjana/ls6/wav8k/max/dev/s1'
+cv_s2 = '/work/11007/sanjana/ls6/wav8k/max/dev/s2'
 
 cv_mix_file = open(cv_mix_scp,'w')
 for root, dirs, files in os.walk(cv_mix):

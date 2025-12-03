@@ -1,5 +1,5 @@
 project: "[Project] SepReformer" ### Dont't change
-notes: "SepReformer final version" ### Insert schanges(plz write details !!!)
+notes: "SepReformer TINY" ### Insert schanges(plz write details !!!)
 # ------------------------------------------------------------------------------------------------------------------------------ #
 config:
     # ------------------------------------------------------------ #
@@ -32,7 +32,7 @@ config:
         num_spks: &var_model_num_spks 2
         module_audio_enc:
             in_channels: 1
-            out_channels: &var_model_audio_enc_out_channels 256
+            out_channels: &var_model_audio_enc_out_channels 128
             kernel_size: &var_model_audio_enc_kernel_size 16 # L
             stride: &var_model_audio_enc_stride 4 # S
             groups: 1
@@ -40,7 +40,7 @@ config:
         module_feature_projector:
             num_channels: *var_model_audio_enc_out_channels 
             in_channels: *var_model_audio_enc_out_channels
-            out_channels: &feature_projector_out_channels 128 # F
+            out_channels: &feature_projector_out_channels 64 # F
             kernel_size: 1
             bias: false
         module_separator:
