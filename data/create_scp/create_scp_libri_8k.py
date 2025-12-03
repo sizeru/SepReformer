@@ -6,9 +6,9 @@ train_s1_scp = 'scp_ss_8k_libri/tr_s1.scp'
 train_s2_scp = 'scp_ss_8k_libri/tr_s2.scp'
 
 # NOTE(Nate): Change me to the correct dir sometimes
-train_mix = '/work/11007/sanjana/ls6/wav8k/max/train-360/mix_clean'
-train_s1 = '/work/11007/sanjana/ls6/wav8k/max/train-360/s1'
-train_s2 = '/work/11007/sanjana/ls6/wav8k/max/train-360/s2'
+train_mix = '/work/11007/sanjana/ls6/wav8k/max/train-100/mix_clean'
+train_s1 = '/work/11007/sanjana/ls6/wav8k/max/train-100/s1'
+train_s2 = '/work/11007/sanjana/ls6/wav8k/max/train-100/s2'
 
 
 tr_mix = open(train_mix_scp,'w')
